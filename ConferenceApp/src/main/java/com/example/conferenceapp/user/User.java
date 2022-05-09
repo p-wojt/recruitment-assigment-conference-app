@@ -16,9 +16,13 @@ public class User {
 
     @NotEmpty(message = "Username cannot be empty")
     private String username;
-    @Email
+    @Email(message = "Provided email is not an email")
     private String email;
 
     public User() {
+    }
+
+    public void setEmail(final String email){
+        this.email = email;
     }
 }
