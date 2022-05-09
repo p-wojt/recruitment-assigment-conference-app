@@ -1,28 +1,28 @@
 package com.example.conferenceapp.user;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
-@Entity
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @NotEmpty(message = "Login nie może być pusty")
+    @Size(min = 3, max = 24, message = "Login musi od 3 do 24 znaków")
+    private String login;
 
-    @NotEmpty(message = "Username cannot be empty")
-    private String username;
-    @Email(message = "Provided email is not an email")
+    @Email(message = "Podany email nie jest właściwy")
     private String email;
 
-    public User() {
+    public User(final String login, final String email) {
+        this.login = login;
+        this.email = email;
     }
 
-    public void setEmail(final String email){
-        this.email = email;
+    public String getLogin() {
+        return login;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
