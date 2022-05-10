@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -95,6 +97,14 @@ public class ReservationService {
         return StreamSupport.stream(this.reservationRepository.findAll().spliterator(), false)
                 .map(reservation -> new User(reservation.getUserLogin(), reservation.getUserEmail()))
                 .collect(Collectors.toSet());
+    }
+
+    public Map<Long, String> getLecturesStats() {
+        final Map<Long, String> lecturesStats = new HashMap<>();
+        ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures().forEach(
+                lecture -> lecturesStats.put(lecture.getId(), lecture.percentageOfSlotsOccupied())
+        );
+        return lecturesStats;
     }
 
     private void addUser(final long lectureId, final User user) {

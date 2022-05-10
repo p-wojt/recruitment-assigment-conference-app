@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -61,5 +62,10 @@ public class ReservationController {
     @GetMapping("/users")
     public ResponseEntity<Set<User>> getAllRegisteredUsers(){
         return ResponseEntity.ok(this.reservationService.getAllRegisteredUsers());
+    }
+
+    @GetMapping(params = "lecturesStats")
+    public ResponseEntity<Map<Long, String>> getLecturesStats(){
+        return ResponseEntity.ok(this.reservationService.getLecturesStats());
     }
 }

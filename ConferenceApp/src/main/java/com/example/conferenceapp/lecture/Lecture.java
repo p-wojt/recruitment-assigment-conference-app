@@ -38,6 +38,10 @@ public class Lecture {
         return participants.size() < 5;
     }
 
+    public String percentageOfSlotsOccupied() {
+        return this.getParticipants().size() / 5.0 * 100 + "%";
+    }
+
     public Long getId() {
         return id;
     }
