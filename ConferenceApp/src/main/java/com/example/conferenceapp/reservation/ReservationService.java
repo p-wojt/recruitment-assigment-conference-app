@@ -80,7 +80,7 @@ public class ReservationService {
             throw new InvalidUserLoginOrPasswordException("Podany login lub email jest niepoprawny");
         }
         if(reservationRepository.existsByUserEmail(request.getNewEmail())){
-            throw new UserEmailCollisionException("Podany email jest już zajęty");
+            throw new UserEmailCollisionException("Podany email już istnieje");
         }
         ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures()
                         .forEach(lecture -> lecture.getParticipants().forEach(user -> {

@@ -1,6 +1,8 @@
 package com.example.conferenceapp.lecture.exception;
 
-public class LectureWIthFullSlotsException extends RuntimeException {
+import com.example.conferenceapp.advice.resolver.APIErrorStatusNotFoundResolver;
+
+public class LectureWIthFullSlotsException extends RuntimeException implements APIErrorStatusNotFoundResolver {
     public LectureWIthFullSlotsException(final String message) {
         super(message);
     }

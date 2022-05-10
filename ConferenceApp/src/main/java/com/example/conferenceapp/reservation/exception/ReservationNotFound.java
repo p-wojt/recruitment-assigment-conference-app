@@ -1,6 +1,8 @@
 package com.example.conferenceapp.reservation.exception;
 
-public class ReservationNotFound extends RuntimeException {
+import com.example.conferenceapp.advice.resolver.APIErrorStatusNotFoundResolver;
+
+public class ReservationNotFound extends RuntimeException implements APIErrorStatusNotFoundResolver {
 
     public ReservationNotFound(final String message) {
         super(message);

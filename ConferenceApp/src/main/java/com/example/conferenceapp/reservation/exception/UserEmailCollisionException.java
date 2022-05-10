@@ -1,6 +1,8 @@
 package com.example.conferenceapp.reservation.exception;
 
-public class UserEmailCollisionException extends RuntimeException {
+import com.example.conferenceapp.advice.resolver.APIErrorStatusConflictResolver;
+
+public class UserEmailCollisionException extends RuntimeException implements APIErrorStatusConflictResolver {
 
     public UserEmailCollisionException(final String message) {
         super(message);
