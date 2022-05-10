@@ -4,6 +4,7 @@ import com.example.conferenceapp.lecture.Lecture;
 import com.example.conferenceapp.user.User;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,5 +36,17 @@ public class ReservationController {
     public ResponseEntity<Reservation> saveReservation(@PathVariable("id") final long lectureId, @Valid @RequestBody final User user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/lecture" + lectureId).toUriString());
         return ResponseEntity.created(uri).body(this.reservationService.reserve(lectureId, user));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> cancelReservation(@PathVariable final long id, @Valid @RequestBody final User user){
+        this.reservationService.cancelReservation(id, user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<?> cancelAllReservations(@Valid @RequestBody final User user){
+        this.reservationService.cancelAllReservations(user);
+        return ResponseEntity.noContent().build();
     }
 }

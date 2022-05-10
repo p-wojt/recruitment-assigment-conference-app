@@ -4,12 +4,15 @@ import com.example.conferenceapp.ConferenceAppApplication;
 import com.example.conferenceapp.lecture.Lecture;
 import com.example.conferenceapp.lecture.exception.LectureWIthFullSlotsException;
 import com.example.conferenceapp.notification.NotificationUtils;
+import com.example.conferenceapp.reservation.exception.InvalidUserLoginOrPasswordException;
 import com.example.conferenceapp.reservation.exception.PlanCollisionException;
+import com.example.conferenceapp.reservation.exception.ReservationNotFound;
 import com.example.conferenceapp.reservation.exception.UserLoginCollisionException;
 import com.example.conferenceapp.user.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -31,14 +34,40 @@ public class ReservationService {
         }
         this.addUser(lectureId, user);
         final Reservation reservation = new Reservation(user.getLogin(), user.getEmail(), lectureId);
-        NotificationUtils.notifyUser(user.getEmail(), "Pomyślnie zapisano na kurs!");
+        NotificationUtils.notifyUser(user.getEmail(), "Pomyślnie zapisano na kurs");
         return this.reservationRepository.save(reservation);
     }
 
     public Set<Lecture> getAllUserLectures(final String login) {
         return this.reservationRepository.findAllByUserLogin(login).stream()
-                .map(reservation -> this.getLectureById(reservation.getPrelectionId()))
+                .map(reservation -> this.getLectureById(reservation.getLectureId()))
                 .collect(Collectors.toSet());
+    }
+
+    public void cancelReservation(final long id, final User user) {
+        var reservation = this.reservationRepository.findById(id).orElseThrow(
+                () -> new ReservationNotFound("Rezerwacja o podanym identyfikatorze nie istnieje")
+        );
+        if(reservation.getUserEmail().equals(user.getEmail()) && reservation.getUserLogin().equals(user.getLogin())){
+            var lectureId = reservation.getLectureId();
+            ConferenceAppApplication.conferences.get(CONFERENCE_ID)
+                    .getLectureById(lectureId)
+                    .removeUser(user);
+            this.reservationRepository.delete(reservation);
+        }else{
+            throw new InvalidUserLoginOrPasswordException("Podany login lub email jest niepoprawny");
+        }
+    }
+
+    public void cancelAllReservations(final User user) {
+        var reservations = this.reservationRepository.findAllByUserLogin(user.getLogin());
+        ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures()
+                .forEach(lecture -> {
+                    if(lecture.getParticipants().contains(user)){
+                        lecture.removeUser(user);
+                    }
+                });
+        this.reservationRepository.deleteAll(reservations);
     }
 
     private void addUser(final long lectureId, final User user) {

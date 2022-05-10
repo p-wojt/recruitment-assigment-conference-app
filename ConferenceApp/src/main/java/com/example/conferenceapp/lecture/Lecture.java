@@ -30,6 +30,10 @@ public class Lecture {
         this.participants.add(user);
     }
 
+    public void removeUser(final User user){
+        this.participants.remove(user);
+    }
+
     public boolean areFreeSlots() {
         return participants.size() < 5;
     }

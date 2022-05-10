@@ -18,15 +18,15 @@ public class Reservation {
 
     private String userEmail;
 
-    private Long prelectionId;
+    private Long lectureId;
 
     public Reservation() {
     }
 
-    public Reservation(final String userLogin, final String userEmail, final Long prelectionId) {
+    public Reservation(final String userLogin, final String userEmail, final Long lectureId) {
         this.userLogin = userLogin;
         this.userEmail = userEmail;
-        this.prelectionId = prelectionId;
+        this.lectureId = lectureId;
     }
 
     public Long getId() {
@@ -41,7 +41,7 @@ public class Reservation {
         return userEmail;
     }
 
-    public Long getPrelectionId() {
-        return prelectionId;
+    public Long getLectureId() {
+        return lectureId;
     }
 }
