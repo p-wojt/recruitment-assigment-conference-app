@@ -87,6 +87,12 @@ public class ReservationService {
         reservations.forEach(reservation -> reservation.setUserEmail(request.getNewEmail()));
     }
 
+    public Set<User> getAllRegisteredUsers() {
+        return StreamSupport.stream(this.reservationRepository.findAll().spliterator(), false)
+                .map(reservation -> new User(reservation.getUserLogin(), reservation.getUserEmail()))
+                .collect(Collectors.toSet());
+    }
+
     private void addUser(final long lectureId, final User user) {
         var lecture = this.getLectureById(lectureId);
         if (lecture.areFreeSlots()) {

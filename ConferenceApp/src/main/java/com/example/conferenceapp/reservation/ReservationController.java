@@ -57,4 +57,9 @@ public class ReservationController {
         this.reservationService.updateEmail(request);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<Set<User>> getAllRegisteredUsers(){
+        return ResponseEntity.ok(this.reservationService.getAllRegisteredUsers());
+    }
 }
