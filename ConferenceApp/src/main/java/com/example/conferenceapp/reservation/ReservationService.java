@@ -2,6 +2,7 @@ package com.example.conferenceapp.reservation;
 
 import com.example.conferenceapp.ConferenceAppApplication;
 import com.example.conferenceapp.lecture.Lecture;
+import com.example.conferenceapp.lecture.LectureType;
 import com.example.conferenceapp.lecture.exception.LectureWIthFullSlotsException;
 import com.example.conferenceapp.notification.NotificationUtils;
 import com.example.conferenceapp.reservation.exception.InvalidUserLoginOrPasswordException;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.example.conferenceapp.Constants.CONFERENCE_ID;
+import static com.example.conferenceapp.Constants.DECIMAL_FORMAT;
 
 @Service
 public class ReservationService {
@@ -52,13 +54,13 @@ public class ReservationService {
         var reservation = this.reservationRepository.findById(id).orElseThrow(
                 () -> new ReservationNotFound("Rezerwacja o podanym identyfikatorze nie istnieje")
         );
-        if(reservation.getUserEmail().equals(user.getEmail()) && reservation.getUserLogin().equals(user.getLogin())){
+        if (reservation.getUserEmail().equals(user.getEmail()) && reservation.getUserLogin().equals(user.getLogin())) {
             var lectureId = reservation.getLectureId();
             ConferenceAppApplication.conferences.get(CONFERENCE_ID)
                     .getLectureById(lectureId)
                     .removeUser(user);
             this.reservationRepository.delete(reservation);
-        }else{
+        } else {
             throw new InvalidUserLoginOrPasswordException("Podany login lub email jest niepoprawny");
         }
     }
@@ -67,7 +69,7 @@ public class ReservationService {
         var reservations = this.reservationRepository.findAllByUserLogin(user.getLogin());
         ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures()
                 .forEach(lecture -> {
-                    if(lecture.getParticipants().contains(user)){
+                    if (lecture.getParticipants().contains(user)) {
                         lecture.removeUser(user);
                     }
                 });
@@ -75,21 +77,21 @@ public class ReservationService {
     }
 
     @Transactional
-    public void updateEmail(final UserEmailChangeRequest request){
+    public void updateEmail(final UserEmailChangeRequest request) {
         var userLogin = request.getUser().getLogin();
         var reservations = this.reservationRepository.findAllByUserLogin(userLogin);
-        if(reservations.isEmpty()){
+        if (reservations.isEmpty()) {
             throw new InvalidUserLoginOrPasswordException("Podany login lub email jest niepoprawny");
         }
-        if(reservationRepository.existsByUserEmail(request.getNewEmail())){
+        if (reservationRepository.existsByUserEmail(request.getNewEmail())) {
             throw new UserEmailCollisionException("Podany email już istnieje");
         }
         ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures()
-                        .forEach(lecture -> lecture.getParticipants().forEach(user -> {
-                            if(user.equals(request.getUser())){
-                                user.setEmail(request.getNewEmail());
-                            }
-                        }));
+                .forEach(lecture -> lecture.getParticipants().forEach(user -> {
+                    if (user.equals(request.getUser())) {
+                        user.setEmail(request.getNewEmail());
+                    }
+                }));
         reservations.forEach(reservation -> reservation.setUserEmail(request.getNewEmail()));
     }
 
@@ -105,6 +107,29 @@ public class ReservationService {
                 lecture -> lecturesStats.put(lecture.getId(), lecture.percentageOfSlotsOccupied())
         );
         return lecturesStats;
+    }
+
+    public Map<LectureType, String> getPathsStats() {
+        final Map<LectureType, Long> amountOfUsersBypaths = new HashMap<>();
+        ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures().forEach(
+                lecture -> {
+                    final LectureType lectureType = lecture.getLectureType();
+                    amountOfUsersBypaths.put(lectureType,
+                            amountOfUsersBypaths.containsKey(lectureType) ?
+                                    amountOfUsersBypaths.get(lectureType) + lecture.getParticipants().size()
+                                    : lecture.getParticipants().size());
+                }
+        );
+        long sum = amountOfUsersBypaths.values().stream().reduce(0L, Long::sum);
+
+        final Map<LectureType, String> pathsStats = new HashMap<>();
+        for(Map.Entry<LectureType, Long> entry : amountOfUsersBypaths.entrySet()){
+            pathsStats.put(entry.getKey(), sum != 0 ? DECIMAL_FORMAT.format(
+                    entry.getValue() / (double) sum * 100).replace(',', '.')  + "%" : "0%"
+            );
+        }
+
+        return pathsStats;
     }
 
     private void addUser(final long lectureId, final User user) {

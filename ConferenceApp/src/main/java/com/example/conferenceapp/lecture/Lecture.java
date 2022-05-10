@@ -6,6 +6,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.conferenceapp.Constants.DECIMAL_FORMAT;
+
 public class Lecture {
 
     private Long id;
@@ -39,7 +41,7 @@ public class Lecture {
     }
 
     public String percentageOfSlotsOccupied() {
-        return this.getParticipants().size() / 5.0 * 100 + "%";
+        return DECIMAL_FORMAT.format(this.getParticipants().size() / 5.0 * 100) + "%";
     }
 
     public Long getId() {

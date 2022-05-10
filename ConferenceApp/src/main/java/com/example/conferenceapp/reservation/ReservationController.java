@@ -1,6 +1,7 @@
 package com.example.conferenceapp.reservation;
 
 import com.example.conferenceapp.lecture.Lecture;
+import com.example.conferenceapp.lecture.LectureType;
 import com.example.conferenceapp.user.User;
 import com.example.conferenceapp.user.dto.UserEmailChangeRequest;
 import org.springframework.data.repository.query.Param;
@@ -67,5 +68,10 @@ public class ReservationController {
     @GetMapping(params = "lecturesStats")
     public ResponseEntity<Map<Long, String>> getLecturesStats(){
         return ResponseEntity.ok(this.reservationService.getLecturesStats());
+    }
+
+    @GetMapping(params = "pathsStats")
+    public ResponseEntity<Map<LectureType, String>> getPathsStats() {
+        return ResponseEntity.ok(this.reservationService.getPathsStats());
     }
 }

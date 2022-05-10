@@ -1,5 +1,6 @@
 package com.example.conferenceapp;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -16,6 +17,8 @@ public final class Constants {
     public static final LocalTime T15_45 = LocalTime.of(15, 45);
 
     public static final String FILE_NAME = "powiadomienia.txt";
+
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.##");
 
     private Constants(){
 
