@@ -9,10 +9,11 @@ import com.example.conferenceapp.reservation.exception.PlanCollisionException;
 import com.example.conferenceapp.reservation.exception.ReservationNotFound;
 import com.example.conferenceapp.reservation.exception.UserLoginCollisionException;
 import com.example.conferenceapp.user.User;
+import com.example.conferenceapp.user.dto.UserEmailChangeRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalTime;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -70,8 +71,24 @@ public class ReservationService {
         this.reservationRepository.deleteAll(reservations);
     }
 
+    @Transactional
+    public void updateEmail(final UserEmailChangeRequest request){
+        var userLogin = request.getUser().getLogin();
+        var reservations = this.reservationRepository.findAllByUserLogin(userLogin);
+        if(reservations.isEmpty()){
+            throw new InvalidUserLoginOrPasswordException("Podany login lub email jest niepoprawny");
+        }
+        ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures()
+                        .forEach(lecture -> lecture.getParticipants().forEach(user -> {
+                            if(user.equals(request.getUser())){
+                                user.setEmail(request.getNewEmail());
+                            }
+                        }));
+        reservations.forEach(reservation -> reservation.setUserEmail(request.getNewEmail()));
+    }
+
     private void addUser(final long lectureId, final User user) {
-        Lecture lecture = this.getLectureById(lectureId);
+        var lecture = this.getLectureById(lectureId);
         if (lecture.areFreeSlots()) {
             if (checkIfLectureCollide(user.getLogin(), lecture.getStartTime())) {
                 throw new PlanCollisionException("Wystąpiła kolizja prelekcji w danej ścieżce");

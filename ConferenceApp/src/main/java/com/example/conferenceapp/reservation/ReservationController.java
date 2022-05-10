@@ -2,10 +2,12 @@ package com.example.conferenceapp.reservation;
 
 import com.example.conferenceapp.lecture.Lecture;
 import com.example.conferenceapp.user.User;
+import com.example.conferenceapp.user.dto.UserEmailChangeRequest;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +49,12 @@ public class ReservationController {
     @DeleteMapping("/all")
     public ResponseEntity<?> cancelAllReservations(@Valid @RequestBody final User user){
         this.reservationService.cancelAllReservations(user);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/emailChange")
+    public ResponseEntity<?> updateUserEmail(@RequestBody UserEmailChangeRequest request){
+        this.reservationService.updateEmail(request);
         return ResponseEntity.noContent().build();
     }
 }

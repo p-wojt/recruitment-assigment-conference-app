@@ -8,7 +8,7 @@ import java.util.Objects;
 public class User {
 
     @NotEmpty(message = "Login nie może być pusty")
-    @Size(min = 3, max = 24, message = "Login musi od 3 do 24 znaków")
+    @Size(min = 3, max = 24, message = "Login musi mieć od 3 do 24 znaków")
     private String login;
 
     @Email(message = "Podany email nie jest właściwy")
@@ -25,6 +25,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
     }
 
     @Override

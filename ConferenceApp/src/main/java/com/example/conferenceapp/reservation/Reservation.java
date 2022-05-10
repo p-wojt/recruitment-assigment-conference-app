@@ -44,4 +44,8 @@ public class Reservation {
     public Long getLectureId() {
         return lectureId;
     }
+
+    public void setUserEmail(final String userEmail) {
+        this.userEmail = userEmail;
+    }
 }
