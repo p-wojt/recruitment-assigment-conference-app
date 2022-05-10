@@ -6,4 +6,6 @@ import java.util.Set;
 
 public interface ReservationRepository extends CrudRepository<Reservation, Long> {
     Set<Reservation> findAllByUserLogin(final String login);
+
+    boolean existsByUserEmail(final String email);
 }

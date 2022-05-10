@@ -7,6 +7,7 @@ import com.example.conferenceapp.notification.NotificationUtils;
 import com.example.conferenceapp.reservation.exception.InvalidUserLoginOrPasswordException;
 import com.example.conferenceapp.reservation.exception.PlanCollisionException;
 import com.example.conferenceapp.reservation.exception.ReservationNotFound;
+import com.example.conferenceapp.reservation.exception.UserEmailCollisionException;
 import com.example.conferenceapp.reservation.exception.UserLoginCollisionException;
 import com.example.conferenceapp.user.User;
 import com.example.conferenceapp.user.dto.UserEmailChangeRequest;
@@ -77,6 +78,9 @@ public class ReservationService {
         var reservations = this.reservationRepository.findAllByUserLogin(userLogin);
         if(reservations.isEmpty()){
             throw new InvalidUserLoginOrPasswordException("Podany login lub email jest niepoprawny");
+        }
+        if(reservationRepository.existsByUserEmail(request.getNewEmail())){
+            throw new UserEmailCollisionException("Podany email jest już zajęty");
         }
         ConferenceAppApplication.conferences.get(CONFERENCE_ID).getLectures()
                         .forEach(lecture -> lecture.getParticipants().forEach(user -> {
